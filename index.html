@@ -1,123 +1,112 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Acorn App - Live Prototype</title>
+    <title>Acorn - Financial Growth</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #f0f0f0; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        #phone { width: 340px; height: 680px; background: #FDFCF0; border: 12px solid #333; border-radius: 50px; position: relative; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.3); }
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap');
         
-        /* Inner Phone Screen Styles */
-        #screen { padding: 20px; height: 100%; box-sizing: border-box; display: flex; flexDirection: column; }
+        body { font-family: 'Nunito', sans-serif; background: #E8F5E9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: #4B6B40; }
         
-        /* Notification - Inside the phone */
-        #notification { position: absolute; top: 110px; left: 20px; right: 20px; background: #4B6B40; color: white; padding: 12px; border-radius: 15px; text-align: center; font-size: 14px; transform: translateY(-150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; }
-        #notification.show { transform: translateY(0); }
+        #phone { width: 340px; height: 680px; background: #FFFDF0; border: 10px solid #5D4037; border-radius: 50px; position: relative; overflow: hidden; box-shadow: 0 30px 60px rgba(75, 107, 64, 0.2); }
+        
+        /* Bouncy In-App Notification */
+        #notif { position: absolute; top: 100px; left: 20px; right: 20px; background: #FFD54F; color: #5D4037; padding: 12px; border-radius: 20px; text-align: center; font-weight: 800; transform: scale(0); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; border: 3px solid #FFF; }
+        #notif.pop { transform: scale(1); }
 
-        /* Top Bar */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-        .logo { font-weight: bold; font-size: 22px; color: #4B6B40; }
-        .streak { background: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        /* Header & Progress */
+        .top-nav { padding: 30px 25px 0; display: flex; justify-content: space-between; align-items: center; }
+        .streak-pill { background: #FFCCBC; color: #D84315; padding: 5px 15px; border-radius: 20px; font-size: 14px; border: 2px solid #FFF; }
+        
+        .xp-box { padding: 20px 25px; }
+        .xp-bar { height: 16px; background: #CFD8DC; border-radius: 10px; border: 3px solid #FFF; overflow: hidden; }
+        #fill { height: 100%; background: #81C784; width: 62.5%; transition: 0.8s; }
 
-        /* XP Progress Bar */
-        .xp-section { margin-top: 20px; }
-        .xp-label { font-size: 12px; font-weight: bold; margin-bottom: 6px; display: block; }
-        .progress-bg { height: 12px; background: #e0e0e0; border-radius: 10px; overflow: hidden; }
-        #progress-fill { height: 100%; background: #66BB6A; width: 62.5%; transition: width 0.6s ease; }
+        /* The Hero Area (The Tree) */
+        .tree-stage { height: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #tree-art { font-size: 100px; filter: drop-shadow(0 10px 5px rgba(0,0,0,0.05)); animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* Tree Display */
-        .tree-box { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 20px; }
-        #tree-emoji { font-size: 110px; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1)); }
+        /* Cozy Interaction Cards */
+        .card { background: #FFF; margin: 0 20px 20px; padding: 20px; border-radius: 30px; border: 3px solid #A5D6A7; text-align: center; box-shadow: 0 8px 0 #A5D6A7; }
+        .drop-stat { font-size: 20px; color: #4FC3F7; margin-bottom: 10px; display: block; }
+        
+        .btn { border: none; border-radius: 20px; padding: 15px; width: 100%; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.1s; margin-bottom: 10px; border-bottom: 5px solid rgba(0,0,0,0.1); }
+        .btn:active { transform: translateY(3px); border-bottom-width: 2px; }
+        .btn-water { background: #4FC3F7; color: white; }
+        .btn-earn { background: #81C784; color: white; }
 
-        /* Bottom Controls */
-        .control-card { background: white; padding: 20px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; }
-        .drop-count { font-weight: bold; color: #2196F3; font-size: 18px; margin-bottom: 15px; display: block; }
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 18px; font-weight: bold; font-size: 16px; margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
-        #btn-water { background: #2196F3; color: white; }
-        #btn-play { background: #FFA726; color: white; }
-        .btn:active { transform: scale(0.95); }
-
-        /* Game UI Overlay */
-        #game-ui { display: none; position: absolute; inset: 0; background: #FDFCF0; z-index: 200; flex-direction: column; align-items: center; padding: 40px 20px; }
-        .game-card { width: 200px; height: 200px; background: white; border-radius: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #4CAF50; margin: 60px 0; padding: 20px; text-align: center; }
+        /* Mini-Game Overlay */
+        #game { display: none; position: absolute; inset: 0; background: #FFFDF0; z-index: 200; flex-direction: column; align-items: center; padding: 50px 20px; }
+        .item-card { width: 220px; height: 220px; background: #FFF; border: 4px solid #A5D6A7; border-radius: 40px; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 40px 0; box-shadow: 0 10px 0 #A5D6A7; }
     </style>
 </head>
 <body>
     <div id="phone">
-        <div id="notification">Notification Message</div>
+        <div id="notif">Yay! +1 Water 💧</div>
         
-        <div id="screen">
-            <div class="top-bar">
-                <span class="logo">Açorn</span>
-                <span class="streak">🔥 7 Days</span>
+        <div id="main-view">
+            <div class="top-nav">
+                <span style="font-size: 24px; font-weight: 800;">Açorn</span>
+                <span class="streak-pill">🔥 7 Days</span>
             </div>
-
-            <div class="xp-section">
-                <span class="xp-label">Level 4 — <span id="xp-text">250</span>/400 XP</span>
-                <div class="progress-bg"><div id="progress-fill"></div></div>
+            <div class="xp-box">
+                <span style="font-size: 12px; margin-bottom: 5px; display: block;">LEVEL 4: <span id="xp-num">250</span>/400 XP</span>
+                <div class="xp-bar"><div id="fill"></div></div>
             </div>
-
-            <div class="tree-box">
-                <div id="tree-emoji">🌱</div>
-                <p style="color: #888; font-size: 14px; margin-top: 15px;">Alex is cheering you on!</p>
+            <div class="tree-stage">
+                <div id="tree-art">🌱</div>
+                <p style="font-size: 14px; color: #81C784;">Alex is watching!</p>
             </div>
-
-            <div class="control-card">
-                <span class="drop-count">💧 Droplets: <span id="drop-val">0</span></span>
-                <button id="btn-water" class="btn" onclick="applyWater()">WATER TREE</button>
-                <button id="btn-play" class="btn" onclick="openGame()">EARN DROPS</button>
+            <div class="card">
+                <span class="drop-stat">💧 <span id="drops">0</span> Drops</span>
+                <button class="btn btn-water" onclick="waterIt()">WATER TREE</button>
+                <button class="btn btn-earn" onclick="goGame()">EARN WATER</button>
             </div>
         </div>
 
-        <div id="game-ui">
-            <h3 style="margin-top: 40px;">Need or Want?</h3>
-            <div class="game-card" id="item-display">Bubble Tea</div>
+        <div id="game">
+            <h2 style="margin-top: 20px;">Need or Want?</h2>
+            <div class="item-card" id="target">Bubble Tea</div>
             <div style="display: flex; gap: 15px; width: 100%;">
-                <button class="btn" style="background:#EF5350; flex:1" onclick="handleChoice('Want')">WANT</button>
-                <button class="btn" style="background:#66BB6A; flex:1" onclick="handleChoice('Need')">NEED</button>
+                <button class="btn" style="background:#FF8A80; color:white;" onclick="swipe('Want')">WANT</button>
+                <button class="btn" style="background:#81C784; color:white;" onclick="swipe('Need')">NEED</button>
             </div>
         </div>
     </div>
 
     <script>
         let drops = 0; let xp = 250;
-        const missions = [{n: "Electricity Bill", t: "Need"}, {n: "New Sneakers", t: "Want"}, {n: "Rice & Beans", t: "Need"}, {n: "Phone Case", t: "Want"}];
-        let missionIdx = 0;
+        const quests = [{n:"Electricity Bill", t:"Need"}, {n:"New Shoes", t:"Want"}, {n:"School Lunch", t:"Need"}, {n:"Game Skins", t:"Want"}];
+        let qIdx = 0;
 
-        function showNote(msg) {
-            const note = document.getElementById('notification');
-            note.innerText = msg; note.classList.add('show');
-            setTimeout(() => note.classList.remove('show'), 2500);
+        function toast(m) {
+            const n = document.getElementById('notif');
+            n.innerText = m; n.classList.add('pop');
+            setTimeout(() => n.classList.remove('pop'), 2000);
         }
 
-        function openGame() { document.getElementById('game-ui').style.display = 'flex'; }
+        function goGame() { document.getElementById('game').style.display = 'flex'; }
 
-        function handleChoice(choice) {
-            if(choice === missions[missionIdx].t) {
-                drops++; showNote("Nice! +1 Droplet 💧");
-            } else {
-                showNote("Oops! Think about your needs.");
-            }
-            missionIdx++;
-            if(missionIdx >= missions.length) {
-                missionIdx = 0; document.getElementById('game-ui').style.display = 'none';
-                document.getElementById('drop-val').innerText = drops;
-            } else {
-                document.getElementById('item-display').innerText = missions[missionIdx].n;
-            }
+        function swipe(c) {
+            if(c === quests[qIdx].t) { drops++; toast("Good choice! +1 💧"); }
+            else { toast("Wait, is that a need? 🧐"); }
+            qIdx++;
+            if(qIdx >= quests.length) {
+                qIdx = 0; document.getElementById('game').style.display = 'none';
+                document.getElementById('drops').innerText = drops;
+            } else { document.getElementById('target').innerText = quests[qIdx].n; }
         }
 
-        function applyWater() {
+        function waterIt() {
             if(drops > 0) {
                 drops--; xp += 40;
-                document.getElementById('drop-val').innerText = drops;
-                document.getElementById('xp-text').innerText = xp;
-                document.getElementById('progress-fill').style.width = (xp/400)*100 + "%";
-                if(xp >= 350) document.getElementById('tree-emoji').innerText = "🌳";
-                showNote("The tree grew! Great habit!");
-            } else {
-                showNote("Go play the mission to earn water!");
-            }
+                document.getElementById('drops').innerText = drops;
+                document.getElementById('xp-num').innerText = xp;
+                document.getElementById('fill').style.width = (xp/400)*100 + "%";
+                if(xp >= 350) document.getElementById('tree-art').innerText = "🌳";
+                toast("Tree is growing! ✨");
+            } else { toast("Earn water first! 🐿️"); }
         }
     </script>
 </body>
