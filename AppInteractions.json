@@ -1,0 +1,25 @@
+{
+  "Screen": "Home_Dashboard",
+  "Interactions": [
+    {
+      "Element": "Water_Droplet_Icon",
+      "Action": "OnTap",
+      "Result": "Trigger 'Pouring' animation on the Life Tree; add +10 XP."
+    },
+    {
+      "Element": "Level_4_Badge",
+      "Action": "OnTap",
+      "Result": "Open 'Progress Modal' showing how close Alex is to Level 5."
+    },
+    {
+      "Element": "Track_Expense_Button",
+      "Action": "OnPress",
+      "Result": "Open camera/input to log real-world spending habits."
+    },
+    {
+      "Element": "Acorn_Tree",
+      "Action": "LongPress",
+      "Result": "Zoom in to see the 'Animals' unlocked by financial growth."
+    }
+  ]
+}
