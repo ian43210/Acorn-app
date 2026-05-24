@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Acorn App - Live Prototype</title>
+    <style>
+        body { font-family: sans-serif; background: #FDFCF0; display: flex; justify: center; padding: 20px; }
+        #phone { width: 320px; height: 600px; background: white; border: 8px solid #333; border-radius: 40px; position: relative; overflow: hidden; margin: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        #header { padding: 20px; display: flex; justify-content: space-between; font-weight: bold; color: #4B6B40; }
+        #tree-area { text-align: center; margin-top: 40px; font-size: 80px; }
+        .card { margin: 20px; padding: 15px; border-radius: 15px; background: #f9f9f9; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; color: white; }
+        #btn-water { background: #2196F3; }
+        #btn-game { background: #FF9800; }
+        #game-area { display: none; padding: 20px; text-align: center; }
+        .choice-btn { width: 45%; padding: 10px; border-radius: 10px; border: none; color: white; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="phone">
+        <div id="main-ui">
+            <div id="header"><span>Açorn</span><span id="stats">🔥 7 | ⭐ 250 XP</span></div>
+            <div id="tree-area">🌱</div>
+            <div class="card">
+                <p>Water Droplets: <span id="water-count">0</span></p>
+                <button id="btn-water" class="btn" onclick="useWater()">WATER TREE</button>
+                <button id="btn-game" class="btn" onclick="showGame()">PLAY 'NEEDS vs WANTS'</button>
+            </div>
+        </div>
+        <div id="game-area">
+            <h3>Need or Want?</h3>
+            <h2 id="item-name" style="color: #4CAF50;">Bubble Tea</h2>
+            <div style="display: flex; justify-content: space-between;">
+                <button class="choice-btn" style="background: #FF5252;" onclick="check('Want')">WANT</button>
+                <button class="choice-btn" style="background: #4CAF50;" onclick="check('Need')">NEED</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let water = 0; let xp = 250;
+        const items = [{n:"Electricity Bill", t:"Need"}, {n:"New Shoes", t:"Want"}, {n:"Rice", t:"Need"}];
+        let currentItem = 0;
+
+        function showGame() { document.getElementById('main-ui').style.display = 'none'; document.getElementById('game-area').style.display = 'block'; }
+        
+        function check(choice) {
+            if(choice === items[currentItem].t) { water++; alert("Correct! +1 Water 💧"); }
+            else { alert("Incorrect! Think about your budget."); }
+            currentItem++;
+            if(currentItem >= items.length) { 
+                currentItem = 0; document.getElementById('main-ui').style.display = 'block'; document.getElementById('game-area').style.display = 'none';
+                document.getElementById('water-count').innerText = water;
+            } else { document.getElementById('item-name').innerText = items[currentItem].n; }
+        }
+
+        function useWater() {
+            if(water > 0) {
+                water--; xp += 50; document.getElementById('water-count').innerText = water;
+                document.getElementById('stats').innerText = `🔥 7 | ⭐ ${xp} XP`;
+                if(xp >= 350) document.getElementById('tree-area').innerText = "🌳";
+                alert("The tree grew! You are building financial confidence.");
+            } else { alert("Go play the game to earn water!"); }
+        }
+    </script>
+</body>
+</html>
