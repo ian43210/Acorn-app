@@ -6,79 +6,128 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap');
         
-        body { font-family: 'Nunito', sans-serif; background: #E8F5E9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: #4B6B40; }
+        body { font-family: 'Nunito', sans-serif; background: #f0f0f0; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         
-        #phone { width: 340px; height: 680px; background: #FFFDF0; border: 10px solid #5D4037; border-radius: 50px; position: relative; overflow: hidden; box-shadow: 0 30px 60px rgba(75, 107, 64, 0.2); }
+        /* The Phone Container - centered and clean */
+        #phone { 
+            width: 360px; 
+            height: 700px; 
+            background: linear-gradient(180deg, #E8F5E9 0%, #FFFDF0 100%); 
+            border: 12px solid #333; 
+            border-radius: 50px; 
+            position: relative; 
+            overflow: hidden; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
         
-        /* Bouncy In-App Notification */
-        #notif { position: absolute; top: 100px; left: 20px; right: 20px; background: #FFD54F; color: #5D4037; padding: 12px; border-radius: 20px; text-align: center; font-weight: 800; transform: scale(0); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; border: 3px solid #FFF; }
-        #notif.pop { transform: scale(1); }
+        /* Fixed Notification - sliding from top */
+        #notif { 
+            position: absolute; 
+            top: 50px; 
+            left: 20px; 
+            right: 20px; 
+            background: #4B6B40; 
+            color: white; 
+            padding: 12px; 
+            border-radius: 15px; 
+            text-align: center; 
+            z-index: 100;
+            transform: translateY(-200%);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #notif.pop { transform: translateY(0); }
 
-        /* Header & Progress */
-        .top-nav { padding: 30px 25px 0; display: flex; justify-content: space-between; align-items: center; }
-        .streak-pill { background: #FFCCBC; color: #D84315; padding: 5px 15px; border-radius: 20px; font-size: 14px; border: 2px solid #FFF; }
-        
-        .xp-box { padding: 20px 25px; }
-        .xp-bar { height: 16px; background: #CFD8DC; border-radius: 10px; border: 3px solid #FFF; overflow: hidden; }
-        #fill { height: 100%; background: #81C784; width: 62.5%; transition: 0.8s; }
+        /* Top Bar - Matching image_576082.png */
+        .top-nav { padding: 30px 20px 0; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; color: #4B6B40; font-weight: 800; }
+        .streak-pill { background: white; padding: 5px 12px; border-radius: 20px; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-        /* The Hero Area (The Tree) */
-        .tree-stage { height: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #tree-art { font-size: 100px; filter: drop-shadow(0 10px 5px rgba(0,0,0,0.05)); animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        /* XP & Level Section */
+        .xp-container { padding: 10px 20px; }
+        .level-text { font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+        .xp-bar-bg { height: 12px; background: #e0e0e0; border-radius: 10px; overflow: hidden; border: 2px solid white; }
+        #xp-fill { height: 100%; background: #81C784; width: 62.5%; transition: 0.5s; }
 
-        /* Cozy Interaction Cards */
-        .card { background: #FFF; margin: 0 20px 20px; padding: 20px; border-radius: 30px; border: 3px solid #A5D6A7; text-align: center; box-shadow: 0 8px 0 #A5D6A7; }
-        .drop-stat { font-size: 20px; color: #4FC3F7; margin-bottom: 10px; display: block; }
-        
-        .btn { border: none; border-radius: 20px; padding: 15px; width: 100%; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.1s; margin-bottom: 10px; border-bottom: 5px solid rgba(0,0,0,0.1); }
-        .btn:active { transform: translateY(3px); border-bottom-width: 2px; }
-        .btn-water { background: #4FC3F7; color: white; }
-        .btn-earn { background: #81C784; color: white; }
+        /* Tree Area - Centered and Floating */
+        .tree-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        #tree-art { font-size: 120px; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1)); animation: float 3s infinite ease-in-out; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .alex-caption { font-size: 14px; color: #666; margin-top: 20px; font-style: italic; }
 
-        /* Mini-Game Overlay */
-        #game { display: none; position: absolute; inset: 0; background: #FFFDF0; z-index: 200; flex-direction: column; align-items: center; padding: 50px 20px; }
-        .item-card { width: 220px; height: 220px; background: #FFF; border: 4px solid #A5D6A7; border-radius: 40px; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 40px 0; box-shadow: 0 10px 0 #A5D6A7; }
+        /* Bottom Controls - Card Style */
+        .card { 
+            background: white; 
+            margin: 0 20px 30px; 
+            padding: 20px; 
+            border-radius: 30px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+            text-align: center;
+        }
+        .drops-text { font-size: 18px; color: #2196F3; font-weight: bold; margin-bottom: 15px; display: block; }
+        .btn { 
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 18px; 
+            font-family: 'Nunito', sans-serif; 
+            font-weight: 800; 
+            font-size: 16px; 
+            cursor: pointer; 
+            margin-bottom: 10px;
+            transition: 0.2s;
+        }
+        .btn-water { background: #2196F3; color: white; }
+        .btn-play { background: #FFA726; color: white; }
+        .btn:active { transform: scale(0.96); }
+
+        /* Game Overlay */
+        #game-ui { display: none; position: absolute; inset: 0; background: #FFFDF0; z-index: 200; flex-direction: column; align-items: center; padding: 60px 20px; }
+        .game-item { width: 220px; height: 220px; background: white; border-radius: 40px; display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); text-align: center; padding: 20px; color: #4B6B40; border: 3px solid #E8F5E9; }
     </style>
 </head>
 <body>
     <div id="phone">
-        <div id="notif">Yay! +1 Water 💧</div>
+        <div id="notif">Notification!</div>
         
-        <div id="main-view">
+        <div id="main-screen" style="display:flex; flex-direction:column; height:100%;">
             <div class="top-nav">
-                <span style="font-size: 24px; font-weight: 800;">Açorn</span>
-                <span class="streak-pill">🔥 7 Days</span>
+                <span class="logo">Açorn</span>
+                <span class="streak-pill">🔥 12 | ⭐ 250</span>
             </div>
-            <div class="xp-box">
-                <span style="font-size: 12px; margin-bottom: 5px; display: block;">LEVEL 4: <span id="xp-num">250</span>/400 XP</span>
-                <div class="xp-bar"><div id="fill"></div></div>
+
+            <div class="xp-container">
+                <div class="level-text">Level 4 — <span id="xp-num">250</span>/400 XP</div>
+                <div class="xp-bar-bg"><div id="xp-fill"></div></div>
             </div>
+
             <div class="tree-stage">
                 <div id="tree-art">🌱</div>
-                <p style="font-size: 14px; color: #81C784;">Alex is watching!</p>
+                <div class="alex-caption">"Alex is cheering you on!"</div>
             </div>
+
             <div class="card">
-                <span class="drop-stat">💧 <span id="drops">0</span> Drops</span>
-                <button class="btn btn-water" onclick="waterIt()">WATER TREE</button>
-                <button class="btn btn-earn" onclick="goGame()">EARN WATER</button>
+                <span class="drops-text">💧 Droplets: <span id="drop-count">0</span></span>
+                <button class="btn btn-water" onclick="water()">WATER TREE</button>
+                <button class="btn btn-play" onclick="showGame()">EARN WATER</button>
             </div>
         </div>
 
-        <div id="game">
-            <h2 style="margin-top: 20px;">Need or Want?</h2>
-            <div class="item-card" id="target">Bubble Tea</div>
+        <div id="game-ui">
+            <h3>Need or Want?</h3>
+            <div class="game-item" id="item-text">Bubble Tea</div>
             <div style="display: flex; gap: 15px; width: 100%;">
-                <button class="btn" style="background:#FF8A80; color:white;" onclick="swipe('Want')">WANT</button>
-                <button class="btn" style="background:#81C784; color:white;" onclick="swipe('Need')">NEED</button>
+                <button class="btn" style="background:#FF8A80; color:white; flex:1" onclick="answer('Want')">WANT</button>
+                <button class="btn" style="background:#81C784; color:white; flex:1" onclick="answer('Need')">NEED</button>
             </div>
         </div>
     </div>
 
     <script>
         let drops = 0; let xp = 250;
-        const quests = [{n:"Electricity Bill", t:"Need"}, {n:"New Shoes", t:"Want"}, {n:"School Lunch", t:"Need"}, {n:"Game Skins", t:"Want"}];
-        let qIdx = 0;
+        const missions = [{n:"Electricity Bill", t:"Need"}, {n:"New Sneakers", t:"Want"}, {n:"EZ-Link Topup", t:"Need"}];
+        let current = 0;
 
         function toast(m) {
             const n = document.getElementById('notif');
@@ -86,24 +135,24 @@
             setTimeout(() => n.classList.remove('pop'), 2000);
         }
 
-        function goGame() { document.getElementById('game').style.display = 'flex'; }
+        function showGame() { document.getElementById('game-ui').style.display = 'flex'; }
 
-        function swipe(c) {
-            if(c === quests[qIdx].t) { drops++; toast("Good choice! +1 💧"); }
-            else { toast("Wait, is that a need? 🧐"); }
-            qIdx++;
-            if(qIdx >= quests.length) {
-                qIdx = 0; document.getElementById('game').style.display = 'none';
-                document.getElementById('drops').innerText = drops;
-            } else { document.getElementById('target').innerText = quests[qIdx].n; }
+        function answer(c) {
+            if(c === missions[current].t) { drops++; toast("Correct! +1 💧"); }
+            else { toast("Think again! 🧐"); }
+            current++;
+            if(current >= missions.length) {
+                current = 0; document.getElementById('game-ui').style.display = 'none';
+                document.getElementById('drop-count').innerText = drops;
+            } else { document.getElementById('item-text').innerText = missions[current].n; }
         }
 
-        function waterIt() {
+        function water() {
             if(drops > 0) {
-                drops--; xp += 40;
-                document.getElementById('drops').innerText = drops;
+                drops--; xp += 50;
+                document.getElementById('drop-count').innerText = drops;
                 document.getElementById('xp-num').innerText = xp;
-                document.getElementById('fill').style.width = (xp/400)*100 + "%";
+                document.getElementById('xp-fill').style.width = (xp/400)*100 + "%";
                 if(xp >= 350) document.getElementById('tree-art').innerText = "🌳";
                 toast("Tree is growing! ✨");
             } else { toast("Earn water first! 🐿️"); }
