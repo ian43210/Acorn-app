@@ -2,64 +2,132 @@
 <html>
 <head>
     <title>Acorn App - Live Prototype</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { font-family: sans-serif; background: #FDFCF0; display: flex; justify: center; padding: 20px; }
-        #phone { width: 320px; height: 600px; background: white; border: 8px solid #333; border-radius: 40px; position: relative; overflow: hidden; margin: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-        #header { padding: 20px; display: flex; justify-content: space-between; font-weight: bold; color: #4B6B40; }
-        #tree-area { text-align: center; margin-top: 40px; font-size: 80px; }
-        .card { margin: 20px; padding: 15px; border-radius: 15px; background: #f9f9f9; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; color: white; }
-        #btn-water { background: #2196F3; }
-        #btn-game { background: #FF9800; }
-        #game-area { display: none; padding: 20px; text-align: center; }
-        .choice-btn { width: 45%; padding: 10px; border-radius: 10px; border: none; color: white; font-weight: bold; }
+        :root { --primary: #4CAF50; --bg: #FDFCF0; --card: #ffffff; --text: #333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #e0e0e0; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        
+        /* The Phone Frame */
+        #phone { width: 340px; height: 650px; background: var(--bg); border: 12px solid #222; border-radius: 45px; position: relative; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+        
+        /* Header Stats - Matching image_56124c.png */
+        #header { padding: 25px 20px 10px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 800; color: #4B6B40; font-size: 1.2rem; }
+        .streak { font-size: 0.9rem; font-weight: bold; background: #fff; padding: 5px 10px; border-radius: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        /* XP Bar Area */
+        .progress-container { padding: 0 20px; margin-top: 10px; }
+        .progress-text { font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; }
+        .bar-bg { height: 10px; background: #ddd; border-radius: 5px; overflow: hidden; }
+        #bar-fill { height: 100%; background: var(--primary); width: 62.5%; transition: width 0.5s ease; }
+
+        /* The Tree Area */
+        #tree-display { text-align: center; margin: 60px 0; transition: transform 0.3s; }
+        #tree-img { font-size: 100px; display: block; }
+
+        /* In-App Notification (Instead of browser alert) */
+        #toast { position: absolute; top: 80px; left: 10%; width: 80%; background: #333; color: white; padding: 10px; border-radius: 12px; text-align: center; font-size: 0.8rem; opacity: 0; transition: opacity 0.3s; z-index: 100; pointer-events: none; }
+
+        /* Action Cards */
+        .card { margin: 20px; padding: 20px; border-radius: 24px; background: var(--card); box-shadow: 0 8px 20px rgba(0,0,0,0.06); text-align: center; position: absolute; bottom: 20px; width: 260px; left: 20px; box-sizing: border-box; }
+        h3 { margin: 0 0 10px 0; font-size: 1.1rem; }
+        p { margin: 0 0 15px 0; font-size: 0.85rem; color: #666; }
+        
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 15px; cursor: pointer; font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; transition: transform 0.1s; }
+        .btn:active { transform: scale(0.98); }
+        #btn-water { background: #2196F3; color: white; }
+        #btn-game { background: #FF9800; color: white; }
+
+        /* Game Overlay */
+        #game-overlay { display: none; position: absolute; inset: 0; background: var(--bg); z-index: 10; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .item-box { width: 180px; height: 180px; background: white; border-radius: 30px; display: flex; align-items: center; justify-content: center; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); font-size: 1.5rem; font-weight: bold; color: var(--primary); padding: 20px; text-align: center; }
+        .choice-row { display: flex; gap: 15px; width: 100%; }
+        .choice-btn { flex: 1; padding: 15px; border: none; border-radius: 15px; color: white; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
     <div id="phone">
+        <div id="toast">Message goes here</div>
+
         <div id="main-ui">
-            <div id="header"><span>Açorn</span><span id="stats">🔥 7 | ⭐ 250 XP</span></div>
-            <div id="tree-area">🌱</div>
+            <div id="header">
+                <span class="logo">Açorn</span>
+                <span class="streak">🔥 7 Days</span>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-text">Level 4 — <span id="xp-val">250</span>/400 XP</div>
+                <div class="bar-bg"><div id="bar-fill"></div></div>
+            </div>
+
+            <div id="tree-display">
+                <span id="tree-img">🌱</span>
+            </div>
+
             <div class="card">
-                <p>Water Droplets: <span id="water-count">0</span></p>
+                <h3>Daily Mission</h3>
+                <p>Droplets: <span id="water-count" style="font-weight:bold; color:#2196F3;">0</span></p>
                 <button id="btn-water" class="btn" onclick="useWater()">WATER TREE</button>
-                <button id="btn-game" class="btn" onclick="showGame()">PLAY 'NEEDS vs WANTS'</button>
+                <button id="btn-game" class="btn" onclick="showGame()">EARN WATER</button>
             </div>
         </div>
-        <div id="game-area">
-            <h3>Need or Want?</h3>
-            <h2 id="item-name" style="color: #4CAF50;">Bubble Tea</h2>
-            <div style="display: flex; justify-content: space-between;">
+
+        <div id="game-overlay">
+            <p style="font-weight:bold">Is this a Need or a Want?</p>
+            <div class="item-box" id="item-name">Bubble Tea</div>
+            <div class="choice-row">
                 <button class="choice-btn" style="background: #FF5252;" onclick="check('Want')">WANT</button>
-                <button class="choice-btn" style="background: #4CAF50;" onclick="check('Need')">NEED</button>
+                <button class="choice-btn" style="background: var(--primary);" onclick="check('Need')">NEED</button>
             </div>
         </div>
     </div>
 
     <script>
         let water = 0; let xp = 250;
-        const items = [{n:"Electricity Bill", t:"Need"}, {n:"New Shoes", t:"Want"}, {n:"Rice", t:"Need"}];
+        const items = [{n:"Electricity Bill", t:"Need"}, {n:"New Shoes", t:"Want"}, {n:"Transport Fare", t:"Need"}, {n:"Game Skins", t:"Want"}];
         let currentItem = 0;
 
-        function showGame() { document.getElementById('main-ui').style.display = 'none'; document.getElementById('game-area').style.display = 'block'; }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.style.opacity = '1';
+            setTimeout(() => { t.style.opacity = '0'; }, 2000);
+        }
+
+        function showGame() { 
+            document.getElementById('game-overlay').style.display = 'flex'; 
+        }
         
         function check(choice) {
-            if(choice === items[currentItem].t) { water++; alert("Correct! +1 Water 💧"); }
-            else { alert("Incorrect! Think about your budget."); }
+            if(choice === items[currentItem].t) { 
+                water++; 
+                showToast("Correct! +1 Water 💧");
+            } else { 
+                showToast("Think again! Is that essential?"); 
+            }
             currentItem++;
             if(currentItem >= items.length) { 
-                currentItem = 0; document.getElementById('main-ui').style.display = 'block'; document.getElementById('game-area').style.display = 'none';
+                currentItem = 0; 
+                document.getElementById('game-overlay').style.display = 'none';
                 document.getElementById('water-count').innerText = water;
-            } else { document.getElementById('item-name').innerText = items[currentItem].n; }
+            } else { 
+                document.getElementById('item-name').innerText = items[currentItem].n; 
+            }
         }
 
         function useWater() {
             if(water > 0) {
-                water--; xp += 50; document.getElementById('water-count').innerText = water;
-                document.getElementById('stats').innerText = `🔥 7 | ⭐ ${xp} XP`;
-                if(xp >= 350) document.getElementById('tree-area').innerText = "🌳";
-                alert("The tree grew! You are building financial confidence.");
-            } else { alert("Go play the game to earn water!"); }
+                water--; xp += 30;
+                document.getElementById('water-count').innerText = water;
+                document.getElementById('xp-val').innerText = xp;
+                document.getElementById('bar-fill').style.width = (xp/400)*100 + "%";
+                document.getElementById('tree-display').style.transform = "scale(1.1)";
+                setTimeout(() => { document.getElementById('tree-display').style.transform = "scale(1)"; }, 200);
+                
+                if(xp >= 350) document.getElementById('tree-img').innerText = "🌳";
+                showToast("The tree is growing!");
+            } else { 
+                showToast("Play the game to earn water first!"); 
+            }
         }
     </script>
 </body>
